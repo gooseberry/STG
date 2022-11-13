@@ -52,10 +52,10 @@ class Player(pygame.sprite.Sprite):
         pressed_keys = pygame.key.get_pressed()
         self.image = pygame.image.load("assets/img/player.png")
 
-        if self.rect.top > 0:
+        if self.rect.top > (SCREEN_HEIGHT/4):
             if pressed_keys[K_UP]:
                 self.rect.move_ip(0, -5)
-        if self.rect.bottom < SCREEN_HEIGHT:
+        if self.rect.bottom < (SCREEN_HEIGHT-100):
             if pressed_keys[K_DOWN]:
                 self.rect.move_ip(0,5)
         if self.rect.left > 0:
