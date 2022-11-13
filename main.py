@@ -1,18 +1,92 @@
 #!/usr/bin/env python3
 
-import pygame
+import pygame, sys
 from pygame.locals import *
+import random
 
 pygame.init()
 
+FPS = 60
+FramePerSec = pygame.time.Clock()
+
+# Pre-define some colours
+BLUE  = (0, 0, 255)
+RED   = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+ 
+# Screen information
+SCREEN_WIDTH = 480
+SCREEN_HEIGHT = 680
+ 
+DISPLAYSURF = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
+DISPLAYSURF.fill(WHITE)
+pygame.display.set_caption("Game")
+
+class Enemy(pygame.sprite.Sprite):
+      def __init__(self):
+        super().__init__() 
+        self.image = pygame.image.load("Enemy.png")
+        self.rect = self.image.get_rect()
+        self.rect.center=(random.randint(40,SCREEN_WIDTH-40),0) 
+ 
+      def move(self):
+        self.rect.move_ip(0,10)
+        if (self.rect.bottom > 600):
+            self.rect.top = 0
+            self.rect.center = (random.randint(30, 370), 0)
+ 
+      def draw(self, surface):
+        surface.blit(self.image, self.rect) 
+ 
+ 
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__() 
+        self.image = pygame.image.load("assets/img/player.png")
+        self.rect = self.image.get_rect()
+        self.rect.center = (160, 450)
+ 
+    def update(self):
+        pressed_keys = pygame.key.get_pressed()
+        self.image = pygame.image.load("assets/img/player.png")
+
+        if self.rect.top > 0:
+            if pressed_keys[K_UP]:
+                self.rect.move_ip(0, -5)
+        if self.rect.bottom < SCREEN_HEIGHT:
+            if pressed_keys[K_DOWN]:
+                self.rect.move_ip(0,5)
+        if self.rect.left > 0:
+            if pressed_keys[K_LEFT]:
+                self.image = pygame.image.load("assets/img/player_left.png")
+                self.rect.move_ip(-5, 0)
+        if self.rect.right < SCREEN_WIDTH:        
+            if pressed_keys[K_RIGHT]:
+                self.image = pygame.image.load("assets/img/player_right.png")
+                self.rect.move_ip(5, 0)
+ 
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)     
+ 
+         
+P1 = Player()
+#E1 = Enemy()
+
 
 # Game Loop
-while True:
-    
-    pygame.display.update()
-
-    # quit game
-    for event in pygame.event.get():
+while True:     
+    for event in pygame.event.get():              
         if event.type == QUIT:
             pygame.quit()
-            sys.exit
+            sys.exit()
+    P1.update()
+    #E1.move()
+     
+    DISPLAYSURF.fill(WHITE)
+    P1.draw(DISPLAYSURF)
+    #E1.draw(DISPLAYSURF)
+         
+    pygame.display.update()
+    FramePerSec.tick(FPS)
