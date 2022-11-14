@@ -16,13 +16,8 @@ GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
  
-# Screen information
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 800
-DISPLAYSURF = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
-
 # Background
-background = pygame.image.load("assets/img/background.png")
+
 pygame.display.set_caption("Game")
 
 class Enemy(pygame.sprite.Sprite):
@@ -43,8 +38,9 @@ class Enemy(pygame.sprite.Sprite):
  
  
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, surface):
         super().__init__() 
+        self.suface_width, self.surface_height = pygame.display.get_surface().get_size()
         self.image = pygame.image.load("assets/img/player.png")
         self.rect = self.image.get_rect()
         self.rect.center = (300, 600)
@@ -69,11 +65,11 @@ class Player(pygame.sprite.Sprite):
             self.v_thrust = 0
 
         # Move down
-        if self.rect.bottom < (SCREEN_HEIGHT-100):
+        if self.rect.bottom < (self.surface_height-100):
             if pressed_keys[K_DOWN] and self.v_thrust < self.MAX_THRUST:
                 self.v_thrust += self.thrusters
         # Stop downward thrust if at bottom
-        elif self.rect.bottom >= (SCREEN_HEIGHT-100) and self.v_thrust > 0:
+        elif self.rect.bottom >= (self.surface_height-100) and self.v_thrust > 0:
             self.v_thrust = 0
 
         # Move left
@@ -87,13 +83,13 @@ class Player(pygame.sprite.Sprite):
             self.h_thrust = 0
 
         # Move right
-        if self.rect.right < SCREEN_WIDTH:        
+        if self.rect.right < self.suface_width:        
             if pressed_keys[K_RIGHT]:
                 self.image = pygame.image.load("assets/img/player_right.png")
                 if self.h_thrust < self.MAX_THRUST:
                     self.h_thrust += self.thrusters
         # Stop right movement if at edge of screen
-        elif self.rect.right >= SCREEN_WIDTH and self.h_thrust > 0:
+        elif self.rect.right >= self.suface_width and self.h_thrust > 0:
             self.h_thrust = 0
 
         self.rect.move_ip(self.h_thrust, self.v_thrust)
@@ -114,17 +110,58 @@ class Player(pygame.sprite.Sprite):
 
  
     def draw(self, surface):
-        surface.blit(self.image, self.rect)     
+        surface.blit(self.image, self.rect)   
+
+class ScrollingBackground:
+    def __init__(self, surface, img_path):
+        self.suface_width, self.surface_height = pygame.display.get_surface().get_size()
+        self.img = pygame.image.load(img_path).convert_alpha()
+        self.img_ypos = - self.surface_height
+
+    def draw(self, surface):
+        surface.blit(self.img, (0, self.img_ypos))
+        surface.blit(self.img, (0, self.img_ypos + self.surface_height))
+
+    def update(self, speed):
+        self.img_ypos += speed
+        if self.img_ypos > 0:
+            self.img_ypos = - self.surface_height
+
+
+class Scene:
+    def __init__(self):
+
+        # Screen information
+        self.SCREEN_WIDTH = 600
+        self.SCREEN_HEIGHT = 800
+        self.DISPLAYSURF = pygame.display.set_mode((self.SCREEN_WIDTH,self.SCREEN_HEIGHT))
+        self.background = ScrollingBackground(self.DISPLAYSURF, "assets/img/background.png")
+        self.texture = ScrollingBackground(self.DISPLAYSURF, "assets/img/background_texture_1.png")
+        self.P1 = Player(self.DISPLAYSURF)
+
+    def drawScene(self):
+        self.DISPLAYSURF.fill(WHITE)
+        self.background.draw(self.DISPLAYSURF)
+        self.texture.draw(self.DISPLAYSURF)
+        self.P1.draw(self.DISPLAYSURF)
+        pygame.display.update()
+
+    def update(self):
+        self.P1.update()
+        self.background.update(self.P1.speed/10)
+        self.texture.update(self.P1.speed/9)
  
-         
-P1 = Player()
-#E1 = Enemy()
+        
 
 def redrawWindow():
+    DISPLAYSURF.fill(WHITE)
     DISPLAYSURF.blit(background, (0,0))
+    DISPLAYSURF.blit(texture, (0,0))
     P1.draw(DISPLAYSURF)
     #E1.draw(DISPLAYSURF)
     pygame.display.update()
+
+scene = Scene()
 
 # Game Loop
 while True:     
@@ -132,8 +169,8 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-    P1.update()
+    scene.update()
     #E1.move()
 
-    redrawWindow()     
+    scene.drawScene()     
     FramePerSec.tick(FPS)
