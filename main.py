@@ -38,7 +38,7 @@ class Enemy(pygame.sprite.Sprite):
  
  
 class Player(pygame.sprite.Sprite):
-    def __init__(self, surface):
+    def __init__(self):
         super().__init__() 
         self.suface_width, self.surface_height = pygame.display.get_surface().get_size()
         self.image = pygame.image.load("assets/img/player.png")
@@ -109,7 +109,7 @@ class Player(pygame.sprite.Sprite):
         surface.blit(self.image, self.rect)   
 
 class ScrollingBackground:
-    def __init__(self, surface, img_path):
+    def __init__(self, img_path):
         self.suface_width, self.surface_height = pygame.display.get_surface().get_size()
         self.img = pygame.image.load(img_path).convert_alpha()
         self.img_ypos = - self.surface_height
@@ -131,11 +131,11 @@ class Scene:
         self.SCREEN_WIDTH = 600
         self.SCREEN_HEIGHT = 800
         self.DISPLAYSURF = pygame.display.set_mode((self.SCREEN_WIDTH,self.SCREEN_HEIGHT))
-        self.background = ScrollingBackground(self.DISPLAYSURF, "assets/img/background.png")
-        self.texture = ScrollingBackground(self.DISPLAYSURF, "assets/img/background_texture.png")
-        self.star_field_1 = ScrollingBackground(self.DISPLAYSURF, "assets/img/star_field_1.png")
-        self.star_field_2 = ScrollingBackground(self.DISPLAYSURF, "assets/img/star_field_2.png")
-        self.P1 = Player(self.DISPLAYSURF)
+        self.background = ScrollingBackground("assets/img/background.png")
+        self.texture = ScrollingBackground("assets/img/background_texture.png")
+        self.star_field_1 = ScrollingBackground("assets/img/star_field_1.png")
+        self.star_field_2 = ScrollingBackground("assets/img/star_field_2.png")
+        self.P1 = Player()
 
     def drawScene(self):
         self.DISPLAYSURF.fill(WHITE)
@@ -152,16 +152,7 @@ class Scene:
         self.texture.update(self.P1.speed*.9)
         self.star_field_1.update(self.P1.speed*0.007)
         self.star_field_2.update(self.P1.speed*0.02)
- 
-        
 
-def redrawWindow():
-    DISPLAYSURF.fill(WHITE)
-    DISPLAYSURF.blit(background, (0,0))
-    DISPLAYSURF.blit(texture, (0,0))
-    P1.draw(DISPLAYSURF)
-    #E1.draw(DISPLAYSURF)
-    pygame.display.update()
 
 scene = Scene()
 
@@ -171,8 +162,7 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-    scene.update()
-    #E1.move()
 
+    scene.update()
     scene.drawScene()     
     FramePerSec.tick(FPS)
