@@ -19,11 +19,10 @@ WHITE = (255, 255, 255)
 # Screen information
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 800
+DISPLAYSURF = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 
 # Background
 background = pygame.image.load("assets/img/background.png")
- 
-DISPLAYSURF = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 pygame.display.set_caption("Game")
 
 class Enemy(pygame.sprite.Sprite):
@@ -51,25 +50,60 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = (160, 450)
         self.speed = 0
         self.MAX_SPEED = 50
+        self.thrusters = 0.5
+        self.drag = 0.1
+        self.v_thrust = 0
+        self.h_thrust = 0
  
     def update(self):
         pressed_keys = pygame.key.get_pressed()
         self.image = pygame.image.load("assets/img/player.png")
 
-        if self.rect.top > (SCREEN_HEIGHT/4):
+        # Move up
+        if self.rect.top > (100):
             if pressed_keys[K_UP]:
-                self.rect.move_ip(0, -5)
+                self.v_thrust -= self.thrusters
+        # Stop upward thrust if at top
+        elif self.rect.top <= (100) and self.v_thrust < 0:
+            self.v_thrust = 0
+
+        # Move down
         if self.rect.bottom < (SCREEN_HEIGHT-100):
             if pressed_keys[K_DOWN]:
-                self.rect.move_ip(0,5)
+                self.v_thrust += self.thrusters
+        # Stop downward thrust if at bottom
+        elif self.rect.bottom >= (SCREEN_HEIGHT-100) and self.v_thrust > 0:
+            self.v_thrust = 0
+
+        # Move left
         if self.rect.left > 0:
             if pressed_keys[K_LEFT]:
                 self.image = pygame.image.load("assets/img/player_left.png")
-                self.rect.move_ip(-5, 0)
+                self.h_thrust -= self.thrusters
+        # Stop left movement if at edge of screen
+        elif self.rect.left <= 0 and self.h_thrust < 0:
+            self.h_thrust = 0
+
+        # Move right
         if self.rect.right < SCREEN_WIDTH:        
             if pressed_keys[K_RIGHT]:
                 self.image = pygame.image.load("assets/img/player_right.png")
-                self.rect.move_ip(5, 0)
+                self.h_thrust += self.thrusters
+        # Stop right movement if at edge of screen
+        elif self.rect.right >= SCREEN_WIDTH and self.h_thrust > 0:
+            self.h_thrust = 0
+
+        self.rect.move_ip(self.h_thrust, self.v_thrust)
+
+        if self.h_thrust > 0:
+            self.h_thrust -= self.drag
+        if self.h_thrust < 0:
+            self.h_thrust += self.drag
+
+        if self.v_thrust > 0:
+            self.v_thrust -= self.drag
+        if self.v_thrust < 0:
+            self.v_thrust += self.drag
 
         if self.speed < self.MAX_SPEED:
             if pressed_keys[K_w]:
