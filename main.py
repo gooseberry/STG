@@ -133,12 +133,16 @@ class Scene:
         self.DISPLAYSURF = pygame.display.set_mode((self.SCREEN_WIDTH,self.SCREEN_HEIGHT))
         self.background = ScrollingBackground(self.DISPLAYSURF, "assets/img/background.png")
         self.texture = ScrollingBackground(self.DISPLAYSURF, "assets/img/background_texture.png")
+        self.star_field_1 = ScrollingBackground(self.DISPLAYSURF, "assets/img/star_field_1.png")
+        self.star_field_2 = ScrollingBackground(self.DISPLAYSURF, "assets/img/star_field_2.png")
         self.P1 = Player(self.DISPLAYSURF)
 
     def drawScene(self):
         self.DISPLAYSURF.fill(WHITE)
         self.background.draw(self.DISPLAYSURF)
         self.texture.draw(self.DISPLAYSURF)
+        self.star_field_1.draw(self.DISPLAYSURF)
+        self.star_field_2.draw(self.DISPLAYSURF)
         self.P1.draw(self.DISPLAYSURF)
         pygame.display.update()
 
@@ -146,6 +150,8 @@ class Scene:
         self.P1.update()
         self.background.update(self.P1.speed)
         self.texture.update(self.P1.speed*.9)
+        self.star_field_1.update(self.P1.speed*0.007)
+        self.star_field_2.update(self.P1.speed*0.02)
  
         
 
