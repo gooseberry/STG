@@ -40,18 +40,30 @@ class Enemy(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__() 
+
+        # Define the sprite image and size
         self.suface_width, self.surface_height = pygame.display.get_surface().get_size()
         self.image = pygame.image.load("assets/img/player.png")
         self.rect = self.image.get_rect()
         self.rect.center = (300, 600)
-        self.speed = 0
+
+        # Set Maximum values for different speeds
+        self.MAX_AFTERBURNER = 200
         self.MAX_SPEED = 50
         self.MAX_THRUST = 5
-        self.thrusters = 0.4
-        self.drag = 0.97
-        self.v_thrust = 0
-        self.h_thrust = 0
+        
+        # Set initial values
+        self.speed = 0          # speed relative to the universe
+        self.v_thrust = 0       # vertical speed relative to the screen
+        self.h_thrust = 0       # horizontal speed relative to the screen
+        
+        # Accelaration values
+        self.main_thrust = 0    # How fast the ship accelerates relative to the universe
+        self.thrusters = 0.4    # How fast the ship accelerates relative to the screen.
+        self.afterburners = 2   # How fast the afterburner accelerates the ship.
+        self.drag = 0.97        # How fast the drag will decelarate movement ( 1 = no drag )
 
+        # Load sound effects
         self.boing_sound = pygame.mixer.Sound("assets/sounds/boing.wav")
  
     def update(self):
@@ -62,7 +74,6 @@ class Player(pygame.sprite.Sprite):
         if self.rect.top > (100):
             if pressed_keys[K_UP] and self.v_thrust > -self.MAX_THRUST:
                 self.v_thrust -= self.thrusters
-        # Stop upward thrust if at top
         elif self.rect.top <= (100) and self.v_thrust < 0:
             self.v_thrust = 0
 
@@ -70,7 +81,6 @@ class Player(pygame.sprite.Sprite):
         if self.rect.bottom < (self.surface_height-100):
             if pressed_keys[K_DOWN] and self.v_thrust < self.MAX_THRUST:
                 self.v_thrust += self.thrusters
-        # Stop downward thrust if at bottom
         elif self.rect.bottom >= (self.surface_height-100) and self.v_thrust > 0:
             self.v_thrust = 0
 
@@ -80,9 +90,8 @@ class Player(pygame.sprite.Sprite):
                 self.image = pygame.image.load("assets/img/player_left.png")
                 if self.h_thrust > -self.MAX_THRUST:
                     self.h_thrust -= self.thrusters
-        # Stop left movement if at edge of screen
         elif self.rect.left <= 0 and self.h_thrust < 0:
-            self.h_thrust = -self.h_thrust
+            self.h_thrust = -self.h_thrust  # bounce if player hits screen edge
             pygame.mixer.Sound.play(self.boing_sound)
 
         # Move right
@@ -91,21 +100,31 @@ class Player(pygame.sprite.Sprite):
                 self.image = pygame.image.load("assets/img/player_right.png")
                 if self.h_thrust < self.MAX_THRUST:
                     self.h_thrust += self.thrusters
-        # Stop right movement if at edge of screen
         elif self.rect.right >= self.suface_width and self.h_thrust > 0:
-            self.h_thrust = -self.h_thrust
+            self.h_thrust = -self.h_thrust  # bounce if player hits screen edge
             pygame.mixer.Sound.play(self.boing_sound)
+
+        # Engage Engine
+        if pressed_keys[K_w]:
+            self.main_thrust = 0.4
+
+        # Disengage Engine
+        if pressed_keys[K_s]:
+            self.main_thrust = 0
 
         self.rect.move_ip(self.h_thrust, self.v_thrust)
 
-        # Slow down movement
-        if self.h_thrust != 0 :
+        # Apply drag coefficient to all speeds relative to the screen.
+        if self.h_thrust != 0:
             self.h_thrust *= self.drag
         if self.v_thrust != 0:
             self.v_thrust *= self.drag
+        if self.speed != 0:
+            self.speed *= self.drag
 
+        # Ship keeps accelerating until it reaches MAX_SPEED
         if self.speed < self.MAX_SPEED:
-            self.speed += 0.1
+            self.speed += self.main_thrust
 
 
  
