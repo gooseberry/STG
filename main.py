@@ -19,9 +19,11 @@ WHITE = (255, 255, 255)
 # Screen information
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 800
+
+# Background
+background = pygame.image.load("assets/img/background.png")
  
 DISPLAYSURF = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
-DISPLAYSURF.fill(WHITE)
 pygame.display.set_caption("Game")
 
 class Enemy(pygame.sprite.Sprite):
@@ -47,6 +49,8 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load("assets/img/player.png")
         self.rect = self.image.get_rect()
         self.rect.center = (160, 450)
+        self.speed = 0
+        self.MAX_SPEED = 50
  
     def update(self):
         pressed_keys = pygame.key.get_pressed()
@@ -66,6 +70,15 @@ class Player(pygame.sprite.Sprite):
             if pressed_keys[K_RIGHT]:
                 self.image = pygame.image.load("assets/img/player_right.png")
                 self.rect.move_ip(5, 0)
+
+        if self.speed < self.MAX_SPEED:
+            if pressed_keys[K_w]:
+                self.speed += 0.1
+
+        if self.speed > 0:
+            if pressed_keys[K_s]:
+                self.speed -= 0.1
+
  
     def draw(self, surface):
         surface.blit(self.image, self.rect)     
@@ -74,6 +87,11 @@ class Player(pygame.sprite.Sprite):
 P1 = Player()
 #E1 = Enemy()
 
+def redrawWindow():
+    DISPLAYSURF.blit(background, (0,0))
+    P1.draw(DISPLAYSURF)
+    #E1.draw(DISPLAYSURF)
+    pygame.display.update()
 
 # Game Loop
 while True:     
@@ -83,10 +101,6 @@ while True:
             sys.exit()
     P1.update()
     #E1.move()
-     
-    DISPLAYSURF.fill(WHITE)
-    P1.draw(DISPLAYSURF)
-    #E1.draw(DISPLAYSURF)
-         
-    pygame.display.update()
+
+    redrawWindow()     
     FramePerSec.tick(FPS)
