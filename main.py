@@ -95,11 +95,11 @@ class Player(pygame.sprite.Sprite):
 
         self.rect.move_ip(self.h_thrust, self.v_thrust)
 
+        # Slow down movement
         if self.h_thrust > 0:
             self.h_thrust -= self.drag
         if self.h_thrust < 0:
             self.h_thrust += self.drag
-
         if self.v_thrust > 0:
             self.v_thrust -= self.drag
         if self.v_thrust < 0:
