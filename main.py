@@ -136,7 +136,7 @@ class Scene:
         self.SCREEN_HEIGHT = 800
         self.DISPLAYSURF = pygame.display.set_mode((self.SCREEN_WIDTH,self.SCREEN_HEIGHT))
         self.background = ScrollingBackground(self.DISPLAYSURF, "assets/img/background.png")
-        self.texture = ScrollingBackground(self.DISPLAYSURF, "assets/img/background_texture_1.png")
+        self.texture = ScrollingBackground(self.DISPLAYSURF, "assets/img/background_texture.png")
         self.P1 = Player(self.DISPLAYSURF)
 
     def drawScene(self):
