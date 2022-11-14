@@ -47,7 +47,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__() 
         self.image = pygame.image.load("assets/img/player.png")
         self.rect = self.image.get_rect()
-        self.rect.center = (160, 450)
+        self.rect.center = (300, 600)
         self.speed = 0
         self.MAX_SPEED = 50
         self.thrusters = 0.5
