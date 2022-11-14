@@ -101,12 +101,8 @@ class Player(pygame.sprite.Sprite):
             self.v_thrust *= self.drag
 
         if self.speed < self.MAX_SPEED:
-            if pressed_keys[K_w]:
-                self.speed += 0.1
+            self.speed += 0.1
 
-        if self.speed > 0:
-            if pressed_keys[K_s]:
-                self.speed -= 0.1
 
  
     def draw(self, surface):
@@ -148,8 +144,8 @@ class Scene:
 
     def update(self):
         self.P1.update()
-        self.background.update(self.P1.speed/10)
-        self.texture.update(self.P1.speed/9)
+        self.background.update(self.P1.speed)
+        self.texture.update(self.P1.speed*.9)
  
         
 
