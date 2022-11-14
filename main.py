@@ -50,6 +50,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = (300, 600)
         self.speed = 0
         self.MAX_SPEED = 50
+        self.MAX_THRUST = 5
         self.thrusters = 0.5
         self.drag = 0.1
         self.v_thrust = 0
@@ -61,7 +62,7 @@ class Player(pygame.sprite.Sprite):
 
         # Move up
         if self.rect.top > (100):
-            if pressed_keys[K_UP]:
+            if pressed_keys[K_UP] and self.v_thrust > -self.MAX_THRUST:
                 self.v_thrust -= self.thrusters
         # Stop upward thrust if at top
         elif self.rect.top <= (100) and self.v_thrust < 0:
@@ -69,7 +70,7 @@ class Player(pygame.sprite.Sprite):
 
         # Move down
         if self.rect.bottom < (SCREEN_HEIGHT-100):
-            if pressed_keys[K_DOWN]:
+            if pressed_keys[K_DOWN] and self.v_thrust < self.MAX_THRUST:
                 self.v_thrust += self.thrusters
         # Stop downward thrust if at bottom
         elif self.rect.bottom >= (SCREEN_HEIGHT-100) and self.v_thrust > 0:
@@ -79,7 +80,8 @@ class Player(pygame.sprite.Sprite):
         if self.rect.left > 0:
             if pressed_keys[K_LEFT]:
                 self.image = pygame.image.load("assets/img/player_left.png")
-                self.h_thrust -= self.thrusters
+                if self.h_thrust > -self.MAX_THRUST:
+                    self.h_thrust -= self.thrusters
         # Stop left movement if at edge of screen
         elif self.rect.left <= 0 and self.h_thrust < 0:
             self.h_thrust = 0
@@ -88,7 +90,8 @@ class Player(pygame.sprite.Sprite):
         if self.rect.right < SCREEN_WIDTH:        
             if pressed_keys[K_RIGHT]:
                 self.image = pygame.image.load("assets/img/player_right.png")
-                self.h_thrust += self.thrusters
+                if self.h_thrust < self.MAX_THRUST:
+                    self.h_thrust += self.thrusters
         # Stop right movement if at edge of screen
         elif self.rect.right >= SCREEN_WIDTH and self.h_thrust > 0:
             self.h_thrust = 0
