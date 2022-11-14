@@ -51,8 +51,8 @@ class Player(pygame.sprite.Sprite):
         self.speed = 0
         self.MAX_SPEED = 50
         self.MAX_THRUST = 5
-        self.thrusters = 0.5
-        self.drag = 0.1
+        self.thrusters = 0.4
+        self.drag = 0.97
         self.v_thrust = 0
         self.h_thrust = 0
  
@@ -99,14 +99,10 @@ class Player(pygame.sprite.Sprite):
         self.rect.move_ip(self.h_thrust, self.v_thrust)
 
         # Slow down movement
-        if self.h_thrust > 0:
-            self.h_thrust -= self.drag
-        if self.h_thrust < 0:
-            self.h_thrust += self.drag
-        if self.v_thrust > 0:
-            self.v_thrust -= self.drag
-        if self.v_thrust < 0:
-            self.v_thrust += self.drag
+        if self.h_thrust != 0 :
+            self.h_thrust *= self.drag
+        if self.v_thrust != 0:
+            self.v_thrust *= self.drag
 
         if self.speed < self.MAX_SPEED:
             if pressed_keys[K_w]:
