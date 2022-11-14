@@ -25,7 +25,7 @@ class Enemy(pygame.sprite.Sprite):
         super().__init__() 
         self.image = pygame.image.load("Enemy.png")
         self.rect = self.image.get_rect()
-        self.rect.center=(random.randint(40,SCREEN_WIDTH-40),0) 
+        self.rect.center=(random.randint(40, screen_width-40),0) 
  
       def move(self):
         self.rect.move_ip(0,10)
@@ -51,6 +51,8 @@ class Player(pygame.sprite.Sprite):
         self.drag = 0.97
         self.v_thrust = 0
         self.h_thrust = 0
+
+        self.boing_sound = pygame.mixer.Sound("assets/sounds/boing.wav")
  
     def update(self):
         pressed_keys = pygame.key.get_pressed()
@@ -80,7 +82,8 @@ class Player(pygame.sprite.Sprite):
                     self.h_thrust -= self.thrusters
         # Stop left movement if at edge of screen
         elif self.rect.left <= 0 and self.h_thrust < 0:
-            self.h_thrust = 0
+            self.h_thrust = -self.h_thrust
+            pygame.mixer.Sound.play(self.boing_sound)
 
         # Move right
         if self.rect.right < self.suface_width:        
@@ -90,7 +93,8 @@ class Player(pygame.sprite.Sprite):
                     self.h_thrust += self.thrusters
         # Stop right movement if at edge of screen
         elif self.rect.right >= self.suface_width and self.h_thrust > 0:
-            self.h_thrust = 0
+            self.h_thrust = -self.h_thrust
+            pygame.mixer.Sound.play(self.boing_sound)
 
         self.rect.move_ip(self.h_thrust, self.v_thrust)
 
@@ -128,9 +132,9 @@ class Scene:
     def __init__(self):
 
         # Screen information
-        self.SCREEN_WIDTH = 600
-        self.SCREEN_HEIGHT = 800
-        self.DISPLAYSURF = pygame.display.set_mode((self.SCREEN_WIDTH,self.SCREEN_HEIGHT))
+        self.screen_width = 600
+        self.screen_height = 800
+        self.display_surf = pygame.display.set_mode((self.screen_width,self.screen_height))
         self.background = ScrollingBackground("assets/img/background.png")
         self.texture = ScrollingBackground("assets/img/background_texture.png")
         self.star_field_1 = ScrollingBackground("assets/img/star_field_1.png")
@@ -138,12 +142,12 @@ class Scene:
         self.P1 = Player()
 
     def drawScene(self):
-        self.DISPLAYSURF.fill(WHITE)
-        self.background.draw(self.DISPLAYSURF)
-        self.texture.draw(self.DISPLAYSURF)
-        self.star_field_1.draw(self.DISPLAYSURF)
-        self.star_field_2.draw(self.DISPLAYSURF)
-        self.P1.draw(self.DISPLAYSURF)
+        self.display_surf.fill(WHITE)
+        self.background.draw(self.display_surf)
+        self.texture.draw(self.display_surf)
+        self.star_field_1.draw(self.display_surf)
+        self.star_field_2.draw(self.display_surf)
+        self.P1.draw(self.display_surf)
         pygame.display.update()
 
     def update(self):
