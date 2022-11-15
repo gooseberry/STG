@@ -79,6 +79,8 @@ class Player(pygame.sprite.Sprite):
 
         # Load sound effects
         self.boing_sound = pygame.mixer.Sound("assets/sounds/boing.wav")
+        self.afterburner_sound = pygame.mixer.Sound("assets/sounds/afterburner.wav")
+        self.engine_sound = pygame.mixer.Sound("assets/sounds/engine.wav")
  
     def update(self):
         pressed_keys = pygame.key.get_pressed()
@@ -116,8 +118,10 @@ class Player(pygame.sprite.Sprite):
         # Main engines
         if pressed_keys[K_w]:
             self.main_engines = True
+            pygame.mixer.Sound.play(self.engine_sound, -1, 0, 250)
         if pressed_keys[K_s]:
             self.main_engines = False 
+            pygame.mixer.Sound.fadeout(self.engine_sound, 500)
 
         # Ship keeps accelerating until it reaches MAX_SPEED
         if self.main_engines is True:
@@ -126,6 +130,9 @@ class Player(pygame.sprite.Sprite):
         # Afterburners
         if pressed_keys[K_LSHIFT] and self.main_engines is True:
             self.speed += (self.main_thrust*3)/self.mass
+            pygame.mixer.Sound.play(self.afterburner_sound, -1, 0, 250)
+        else:
+            pygame.mixer.Sound.fadeout(self.afterburner_sound, 500)
 
         # Apply drag coefficient to all speeds relative to the screen.
         if self.h_speed != 0:
@@ -192,6 +199,8 @@ class Scene:
 
 
 scene = Scene()
+
+print(str(pygame.mixer.get_num_channels()))
 
 # Game Loop
 while True:     
