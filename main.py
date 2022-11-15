@@ -63,7 +63,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = (300, 600)
 
         # Set Maximum values for different speeds
-        self.MAX_THRUST = 5
+        self.max_thrust = 5
         self.mass = 10
         
         # Set initial values
@@ -85,18 +85,19 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load("assets/img/player.png")
 
         # Maneuvering thrusters
-        if pressed_keys[K_UP] and self.v_thrust > -self.MAX_THRUST:
-            self.v_thrust -= self.thrusters
-        if pressed_keys[K_DOWN] and self.v_thrust < self.MAX_THRUST:
-            self.v_thrust += self.thrusters
-        if pressed_keys[K_LEFT]:
-            self.image = pygame.image.load("assets/img/player_left.png")
-            if self.h_thrust > -self.MAX_THRUST:
-                self.h_thrust -= self.thrusters
-        if pressed_keys[K_RIGHT]:
-            self.image = pygame.image.load("assets/img/player_right.png")
-            if self.h_thrust < self.MAX_THRUST:
-                self.h_thrust += self.thrusters
+        if self.main_engines is True:
+            if pressed_keys[K_UP] and self.v_thrust > -self.max_thrust:
+                self.v_thrust -= self.thrusters
+            if pressed_keys[K_DOWN] and self.v_thrust < self.max_thrust:
+                self.v_thrust += self.thrusters
+            if pressed_keys[K_LEFT]:
+                self.image = pygame.image.load("assets/img/player_left.png")
+                if self.h_thrust > -self.max_thrust:
+                    self.h_thrust -= self.thrusters
+            if pressed_keys[K_RIGHT]:
+                self.image = pygame.image.load("assets/img/player_right.png")
+                if self.h_thrust < self.max_thrust:
+                    self.h_thrust += self.thrusters
 
         # Bounding box for maneuveuring
         if self.rect.top <= (100) and self.v_thrust < 0:
